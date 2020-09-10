@@ -1,0 +1,138 @@
+package br.com.interfacesprojeto;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import br.com.codigos.Trabalho0;
+import br.com.codigos. Cliente;
+import br.com.codigos.AtualizarCliente;
+import br.com.codigos.AddProblema;
+import br.com.conexaoBD. ConexaoBD;
+
+public class InterfaceMenu implements ActionListener{
+
+   private JFrame frame;
+   private JLabel label;
+   private ImageIcon imagem;
+   private JPanel panel;
+   private JButton verificar, cadastrar, novo_problema, problema, atualizar;
+   private JTextField cpf_texto;
+   private JTextArea confirma, atividade;
+   
+   public InterfaceMenu(){   
+      frame = new JFrame("Menu");
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setSize(700,600);
+      frame.setResizable(false);
+      frame.getContentPane().setBackground(new Color(200,200,200));
+      frame.setLayout(null);
+      frame.setLocationRelativeTo(null);
+      
+      imagem = new ImageIcon("Mil Informatica.png");
+      label = new JLabel(imagem);
+      frame.add(label);
+      panel = new JPanel();
+      panel.setBounds(150,10,400,360);
+      panel.setBackground(new Color(150,150,150));
+      panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+      panel.add(label);
+      
+      cpf_texto = new JTextField();
+      cpf_texto.setBounds(200,380,200,20);
+      
+      verificar = new JButton("Verificar");
+      verificar.setBounds(400, 380, 100, 20);
+      
+      confirma = new JTextArea();
+      confirma.setBounds(170,420,380,30);
+      confirma.setBackground(new Color(150,150,150));
+      confirma.setEditable(false);
+      confirma.setBorder(BorderFactory.createBevelBorder(1));
+      
+      atividade = new JTextArea();
+      atividade.setBounds(150,420,20,30);
+      atividade.setBackground(new Color(150,150,150));
+      atividade.setEditable(false);
+      atividade.setBorder(BorderFactory.createBevelBorder(1));
+      
+      cadastrar = new JButton("Cadastrar");
+      cadastrar.setBounds(150, 470, 100, 20);
+      
+      atualizar = new JButton("Atualizar");
+      atualizar.setBounds(150,490,100,20);
+      
+      novo_problema = new JButton("Novo Problema");
+      novo_problema.setBounds(275, 470, 150, 20);
+      
+      problema = new JButton("Serviços");
+      problema.setBounds(450, 470, 100, 20);
+      
+      verificar.addActionListener(this);
+      cadastrar.addActionListener(this);
+      novo_problema.addActionListener(this);
+      problema.addActionListener(this);
+      atualizar.addActionListener(this);
+      
+      frame.add(panel);
+      frame.add(verificar);
+      frame.add(atividade);
+      frame.add(confirma);
+      frame.add(cadastrar);
+      frame.add(atualizar);
+      frame.add(novo_problema);
+      frame.add(problema);
+      frame.add(cpf_texto);
+      frame.setVisible(true);
+   }
+   
+   public void actionPerformed(ActionEvent e){
+      if(e.getSource() == cadastrar){
+         frame.setVisible(false);
+         frame.dispose();
+         InterfaceCadastrarCliente cadastro = new InterfaceCadastrarCliente();
+      }
+      else if(e.getSource() == novo_problema){
+         frame.setVisible(false);
+         frame.dispose();
+         AddProblema add = new AddProblema();
+      }
+      else if(e.getSource() == problema){
+          frame.setVisible(false);
+          frame.dispose();
+          Trabalho0 trab = new Trabalho0();
+      }
+      else if(e.getSource() == verificar){
+         try{
+            ConexaoBD b = new ConexaoBD();
+            Connection conn = b.obtemConexao();
+            Cliente c = new Cliente();
+            String sql = "SELECT nome, ativo FROM Cliente WHERE cpf = ?";
+            try(PreparedStatement ps = conn.prepareStatement(sql)){
+               String cpf = cpf_texto.getText();
+               c.setCpf(cpf);
+               ps.setString(1, c.getCpf());
+               ResultSet rs = ps.executeQuery();
+               while(rs.next()) {
+					   String nome = rs.getString("nome");
+                  String ativo = rs.getString("ativo");
+                  confirma.setText(nome);
+                  atividade.setText(ativo);
+              }
+            }
+            
+         }catch(Exception e1){
+            System.out.println("Erro ao Acessar o Banco");
+         }  
+      }
+      else{
+         frame.setVisible(false);
+         frame.dispose();
+         AtualizarCliente att = new AtualizarCliente();
+      }
+   }      
+     
+}
