@@ -1,0 +1,169 @@
+package br.com.interfacesprojeto;
+
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import br.com.codigos.Cliente;
+import br.com.codigos.AddProblema;
+import br.com.conexaoBD.ConexaoBD;
+
+public class InterfaceCadastrarCliente implements ActionListener{
+
+   private JTextField nome_texto, cpf_texto, cep_texto, endereco_texto, complemento_texto, telefone_texto, email_texto, ativo_texto;
+   private JFrame frame;
+   private ImageIcon imagem;
+   private JPanel panel;
+   private JLabel cliente_novo, nome, cpf, cep, endereco, complemento, telefone, email, problema, ativo, lblativo;
+   private JButton continuar, voltar;
+   private JComboBox cb;
+
+
+   public InterfaceCadastrarCliente(){
+      
+      frame = new JFrame("Cadastro");
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setSize(800,500);
+      frame.setResizable(false);
+      frame.getContentPane().setBackground(new Color(200,200,200));
+      frame.setLayout(null);
+      frame.setLocationRelativeTo(null);
+      
+      JButton voltar = new JButton("Voltar");
+      voltar.setBounds(10,10,80,30);
+      voltar.addActionListener(this); 
+      
+      imagem = new ImageIcon("usuario imagem.png");
+      JLabel label = new JLabel(imagem);
+      frame.add(label);
+      
+      panel = new JPanel();
+      panel.setBackground(new Color(119,136,153));
+      panel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+      panel.setBounds(650,50,110,110);
+      panel.add(label);
+      
+      cliente_novo = new JLabel("Novo Cliente");
+      cliente_novo.setBounds(100,40,300,30);
+      cliente_novo.setFont(new Font ("Calibri", Font.BOLD, 30));
+      frame.add(cliente_novo);
+      
+      nome = new JLabel("Nome: ");
+      nome.setBounds(50,70,50,50);
+      frame.add(nome);
+      nome_texto = new JTextField();
+      nome_texto.setBounds(95,85,530,20);
+      frame.add(nome_texto);
+      
+      cpf = new JLabel("CPF: ");
+      cpf.setBounds(50,110,50,50);
+      frame.add(cpf);
+      cpf_texto = new JTextField();
+      cpf_texto.setBounds(95,125,200,20);
+      frame.add(cpf_texto);
+      
+      cep = new JLabel("CEP: ");
+      cep.setBounds(50,150,50,50);
+      frame.add(cep);
+      cep_texto = new JTextField();
+      cep_texto.setBounds(95,165,90,20);
+      frame.add(cep_texto);
+      
+      endereco = new JLabel("Endereço: ");
+      endereco.setBounds(50,190,85,50);
+      frame.add(endereco);
+      endereco_texto = new JTextField();
+      endereco_texto.setBounds(120,205,600,30);
+      frame.add(endereco_texto);
+      
+      complemento = new JLabel("Complemento: ");
+      complemento.setBounds(50,240,85,50);
+      frame.add(complemento);
+      complemento_texto = new JTextField();
+      complemento_texto.setBounds(135,255,300,30);
+      frame.add(complemento_texto);
+      
+      telefone = new JLabel("Telefone: ");
+      telefone.setBounds(310,110,80,50);
+      frame.add(telefone);
+      telefone_texto = new JTextField();
+      telefone_texto.setBounds(370,125,200,20);
+      frame.add(telefone_texto);
+      
+      email = new JLabel("E-mail: ");
+      email.setBounds(50,290,60,50);
+      frame.add(email);
+      email_texto = new JTextField();
+      email_texto.setBounds(95,305,500,20);
+      frame.add(email_texto);
+      
+      continuar = new JButton("Continuar");
+      continuar.setBounds(670,400,90,30);
+      continuar.addActionListener(this); 
+      
+      ativo = new JLabel("Ativo");
+      ativo.setBounds(50,340,80,50);
+      frame.add(ativo);
+      /*
+      ativo_texto = new JTextField();
+      ativo_texto.setBounds(95,355,20,20);
+      frame.add(ativo_texto);*/
+      
+      lblativo = new JLabel("'S' para Ativo 'N' para Inativo");
+      lblativo.setBounds(50,375,200,15);
+      frame.add(lblativo);
+      
+      String c [] = {"S", "N"};
+      cb = new JComboBox(c);
+      cb.setBounds(95,355,40,20);
+      frame.add(cb);
+
+     
+      frame.add(voltar);
+      frame.add(continuar);
+      frame.add(panel);
+      frame.setVisible(true);
+   }
+   public void actionPerformed(ActionEvent e){
+      if(e.getSource() == continuar){
+         String sql = "INSERT INTO Cliente(nome, cpf, cep, endereco, complemento, email, telefone, ativo) VALUES (nome_texto, cpf_texto, cep_texto, endereco_texto, complemento_texto, email_texto, telefone_texto, cb)";
+            try{
+               ConexaoBD b = new ConexaoBD();
+               Connection conn = b.obtemConexao();
+               
+               String nome = nome_texto.getText();
+               String cpf = cpf_texto.getText();
+               String cep = cep_texto.getText();
+               String endereco = endereco_texto.getText();
+               String complemento = complemento_texto.getText();
+               String email = email_texto.getText();
+               String telefone = telefone_texto.getText();
+               //String ativo = ativo_texto.getText();
+               String ativo = (String)cb.getSelectedItem();
+              
+               Cliente c = new Cliente(nome, cpf, cep, endereco, complemento, email, telefone, ativo);
+               c.setNome(nome);
+               c.setCpf(cpf);
+               c.setCep(cep);
+               c.setEndereco(endereco);
+               c.setComplemento(complemento);
+               c.setEmail(email);
+               c.setTelefone(telefone);
+               c.setAtivo(ativo);
+               c.inserir(conn);
+            }catch (Exception e1){
+               System.out.println("Erro ao inserir dados");
+            }
+         frame.setVisible(false);
+         frame.dispose();
+         AddProblema prob = new AddProblema();
+      }
+      else{
+         frame.setVisible(false);
+         frame.dispose();
+         InterfaceMenu menu = new InterfaceMenu();
+      }
+   }
+}
