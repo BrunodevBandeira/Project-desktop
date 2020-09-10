@@ -1,0 +1,188 @@
+package br.com.codigos;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+
+public class Cliente{
+   
+   private String nome;
+   private String cpf;
+   private String cep;
+   private String endereco;
+   private String complemento;
+   private String email;
+   private String telefone;
+   private String ativo;
+   
+   public Cliente(){
+      this.nome = nome;
+      this.cpf = cpf;
+      this.email = email;
+      this.telefone = telefone;
+      this.ativo = ativo;
+
+   }
+   
+   public Cliente(String nome, String cpf, String cep, String endereco, String complemento, String email, String telefone, String ativo){
+      
+      this.nome = nome;
+      this.cpf = cpf;
+      this.cep = cep;
+      this.endereco = endereco;
+      this.complemento = complemento;
+      this.email = email;
+      this.telefone = telefone;
+      this.ativo = ativo;
+   }
+   
+   public String getNome(){
+      return nome;
+   }
+   public void setNome(String nome){
+      this.nome = nome;
+   }
+   
+   public String getCpf(){
+      return cpf;
+   }
+   public void setCpf(String cpf){
+      this.cpf = cpf;
+   }
+   
+   public String getCep(){
+      return cep;
+   }
+   public void setCep(String cep){
+      this.cep = cep;
+   }
+   
+   public String getEndereco(){
+      return endereco;
+   }
+   public void setEndereco(String endereco){
+      this.endereco = endereco;
+   }
+   
+   public String getComplemento(){
+      return complemento;
+   }
+   public void setComplemento(String complemento){
+      this.complemento = complemento;
+   }
+   
+   public String getEmail(){
+      return email;
+   }
+   public void setEmail(String email){
+      this.email = email;
+   }
+   
+   public String getTelefone(){
+      return telefone;
+   }
+   public void setTelefone(String telefone){
+      this.telefone = telefone;
+   }
+   
+   public String getAtivo(){
+      return ativo;
+   }
+   public void setAtivo(String ativo){
+      this.ativo = ativo;
+   }
+ 
+   
+   public void imprimirDados(){
+      System.out.println("Nome: "+nome+"\nCPF: "+cpf+"\nCEP: "+cep+"\nEndereço: "+endereco+"\nComplemento: "+complemento+ 
+                              "\nE-mail: "+email+"\nTelefone: "+telefone+"\nAtivo: "+ativo);
+   }
+   
+   public void inserir(Connection conn){
+      String sqlInsert = "insert into cliente(nome, cpf, cep, endereco, complemento, email, telefone, ativo)"+ "values(?,?,?,?,?,?,?,?)";
+      try(PreparedStatement stm = conn.prepareStatement(sqlInsert)){
+         stm.setString(1, getNome());
+         stm.setString(2, getCpf());
+         stm.setString(3, getCep());
+         stm.setString(4, getEndereco());
+         stm.setString(5, getComplemento());
+         stm.setString(6, getEmail());
+         stm.setString(7, getTelefone());
+         stm.setString(8, getAtivo());
+         stm.execute();
+      }catch(Exception e){
+         e.printStackTrace();
+         try{
+            conn.rollback();
+         }catch(Exception e1){
+            System.out.print(e1.getStackTrace());
+         }
+      }
+   }
+   
+   public void excluir(Connection conn){
+      String sqlDelete = "Delete from Cliente where cpf= ?";
+      try(PreparedStatement stm = conn.prepareStatement(sqlDelete)){
+         stm.setString(1, getCpf());
+         stm.execute();
+      }catch(Exception e){
+         e.printStackTrace();
+         try{
+            conn.rollback();
+         }catch(Exception e1){
+            System.out.print(e1.getStackTrace());
+         }
+      }    
+   }
+   
+   public void carregar (Connection conn){
+      String sqlSelect = "Select nome, ativo from Cliente where cpf = ?";
+      try(PreparedStatement stm = conn.prepareStatement(sqlSelect)){
+         stm.setString(1, getCpf());
+         try(ResultSet rs = stm.executeQuery();){
+            while(rs.next()) {
+					this.setNome(rs.getString(1));
+               this.setAtivo(rs.getString(2));
+            }
+         }
+      }catch(Exception e){
+         e.printStackTrace();
+      }
+   }
+   
+   public void listar(Connection conn){
+      String sql = "SELECT nome , cpf, telefone FROM Cliente";
+      try(PreparedStatement ps = conn.prepareStatement(sql)){
+         ResultSet rs = ps.executeQuery();
+         while(rs.next()){
+            this.setNome(rs.getString(1));
+            this.setCpf(rs.getString(2));
+            this.setTelefone(rs.getString(3));
+         }
+      }catch(Exception e){
+         e.printStackTrace();
+      }
+   }
+   
+   public void atualizar(Connection conn){
+      String sqlInsert = "UPDATE Cliente SET nome = ?, cep = ?, endereco = ?, complemento = ?, email = ?, telefone = ?, ativo = ? WHERE cpf = ?";
+         try(PreparedStatement ps = conn.prepareStatement(sqlInsert)){
+            ps.setString(1, getNome());
+            ps.setString(2, getCep());
+            ps.setString(3, getEndereco());
+            ps.setString(4, getComplemento());
+            ps.setString(5, getEmail());
+            ps.setString(6, getTelefone());
+            ps.setString(7, getAtivo());
+            
+            setCpf(cpf);
+            ps.setString(8, getCpf());
+
+            ps.execute();
+         
+         }catch(Exception e){
+            e.printStackTrace();
+         }
+   }
+}

@@ -1,0 +1,232 @@
+package br.com.codigos;
+
+ 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import br.com.conexaoBD.ConexaoBD;
+import br.com.interfacesprojeto.InterfaceMenu;
+
+public class AtualizarCliente implements ActionListener{
+
+   private JTextField nome_texto, cpf_texto, cep_texto, endereco_texto, complemento_texto, telefone_texto, email_texto, ativo_texto;
+   private JFrame frame;
+   private ImageIcon imagem;
+   private JPanel panel;
+   private JLabel cliente_novo, nome, cpf, cep, endereco, complemento, telefone, email, problema, ativo, lblativo;
+   private JButton continuar, voltar, buscar;
+   private JComboBox cb;
+
+
+   public AtualizarCliente(){
+      
+      frame = new JFrame("Atualizar");
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setSize(800,500);
+      frame.setResizable(false);
+      frame.getContentPane().setBackground(new Color(200,200,200));
+      frame.setLayout(null);
+      frame.setLocationRelativeTo(null);
+      
+      voltar = new JButton("Voltar");
+      voltar.setBounds(10,10,80,30);
+      voltar.addActionListener(this); 
+      
+      imagem = new ImageIcon("usuario imagem.png");
+      JLabel label = new JLabel(imagem);
+      frame.add(label);
+      
+      panel = new JPanel();
+      panel.setBackground(new Color(119,136,153));
+      panel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+      panel.setBounds(650,50,110,110);
+      panel.add(label);
+      
+      cliente_novo = new JLabel("Atualização de Cadastro");
+      cliente_novo.setBounds(100,40,300,30);
+      cliente_novo.setFont(new Font ("Calibri", Font.BOLD, 30));
+      frame.add(cliente_novo);
+      
+      nome = new JLabel("Nome: ");
+      nome.setBounds(50,70,50,50);
+      frame.add(nome);
+      nome_texto = new JTextField();
+      nome_texto.setBounds(95,85,530,20);
+      frame.add(nome_texto);
+      
+      cpf = new JLabel("CPF: ");
+      cpf.setBounds(50,420,50,20);
+      frame.add(cpf);
+      cpf_texto = new JTextField();
+      cpf_texto.setBounds(95,420,200,20);
+      frame.add(cpf_texto);
+      
+      cep = new JLabel("CEP: ");
+      cep.setBounds(50,150,50,50);
+      frame.add(cep);
+      cep_texto = new JTextField();
+      cep_texto.setBounds(95,165,90,20);
+      frame.add(cep_texto);
+      
+      endereco = new JLabel("Endereço: ");
+      endereco.setBounds(50,190,85,50);
+      frame.add(endereco);
+      endereco_texto = new JTextField();
+      endereco_texto.setBounds(120,205,600,30);
+      frame.add(endereco_texto);
+      
+      complemento = new JLabel("Complemento: ");
+      complemento.setBounds(50,240,85,50);
+      frame.add(complemento);
+      complemento_texto = new JTextField();
+      complemento_texto.setBounds(135,255,300,30);
+      frame.add(complemento_texto);
+      
+      telefone = new JLabel("Telefone: ");
+      telefone.setBounds(50,110,80,50);
+      frame.add(telefone);
+      telefone_texto = new JTextField();
+      telefone_texto.setBounds(105,125,200,20);
+      frame.add(telefone_texto);
+      
+      email = new JLabel("E-mail: ");
+      email.setBounds(50,290,60,50);
+      frame.add(email);
+      email_texto = new JTextField();
+      email_texto.setBounds(95,305,500,20);
+      frame.add(email_texto);
+      
+      continuar = new JButton("Continuar");
+      continuar.setBounds(670,400,90,30);
+      continuar.addActionListener(this); 
+      
+      ativo = new JLabel("Ativo");
+      ativo.setBounds(50,340,80,50);
+      frame.add(ativo);
+      
+      /*ativo_texto = new JTextField();
+      ativo_texto.setBounds(95,355,20,20);
+      frame.add(ativo_texto);*/
+      
+      lblativo = new JLabel("'S' para Ativo 'N' para Inativo");
+      lblativo.setBounds(50,375,200,15);
+      frame.add(lblativo);
+      
+      String c [] = {"S", "N"};
+      cb = new JComboBox(c);
+      cb.setBounds(95,355,40,20);
+      frame.add(cb);
+      
+      buscar = new JButton("Buscar");
+      buscar.setBounds(295,420,80,20);
+      frame.add(buscar);
+      buscar.addActionListener(this);
+     
+      frame.add(voltar);
+      frame.add(continuar);
+      frame.add(panel);
+      frame.setVisible(true);
+   }
+   public void actionPerformed(ActionEvent e){
+      if(e.getSource() == continuar){
+            try{
+            ConexaoBD b = new ConexaoBD();
+            Connection conn = b.obtemConexao();
+            String sqlInsert = "UPDATE Cliente SET nome = ?, cep = ?, endereco = ?, complemento = ?, email = ?, telefone = ?, ativo = ? WHERE cpf = ?";
+            try(PreparedStatement ps = conn.prepareStatement(sqlInsert)){
+               
+               Cliente c = new Cliente();
+               
+               String cpf = cpf_texto.getText();
+               c.setCpf(cpf);
+               ps.setString(8, c.getCpf());
+               
+
+               String nome = nome_texto.getText();
+               String cep = cep_texto.getText();
+               String endereco = endereco_texto.getText();
+               String complemento = complemento_texto.getText();
+               String email = email_texto.getText();
+               String telefone = telefone_texto.getText();
+               //String ativo = ativo_texto.getText();
+               String ativo = (String)cb.getSelectedItem();
+            
+               c.setNome(nome);
+               c.setCep(cep);
+               c.setEndereco(endereco);
+               c.setComplemento(complemento);
+               c.setEmail(email);
+               c.setTelefone(telefone);
+               c.setAtivo(ativo);
+
+               c.atualizar(conn);
+               JOptionPane.showMessageDialog(null, "Atualizado com Sucesso");
+            }      
+            
+            
+         }catch(Exception e1){
+            System.out.println("Erro ao Acessar o Banco");
+         }
+
+         frame.setVisible(false);
+         frame.dispose();
+         InterfaceMenu menu = new InterfaceMenu();
+      }
+      else if(e.getSource() == voltar){
+         frame.setVisible(false);
+         frame.dispose();
+         InterfaceMenu menu = new InterfaceMenu();
+      }
+      else{
+         try{
+            ConexaoBD b = new ConexaoBD();
+            Connection conn = b.obtemConexao();
+            Cliente c = new Cliente();
+            String sql = "SELECT nome, telefone, cep, endereco, complemento, email, ativo FROM Cliente WHERE cpf = ?";
+            try(PreparedStatement ps = conn.prepareStatement(sql)){
+               String cpf = cpf_texto.getText();
+               c.setCpf(cpf);
+               ps.setString(1, c.getCpf());
+               ResultSet rs = ps.executeQuery();
+               while(rs.next()) {
+					   String nome = rs.getString("nome");
+                  String telefone = rs.getString("telefone");
+                  String cep = rs.getString("cep");
+                  String endereco = rs.getString("endereco");
+                  String complemento = rs.getString("complemento");
+                  String email = rs.getString("email");
+                  //String ativo = rs.getString("ativo");
+                  
+                  nome_texto.setText(nome);
+                  telefone_texto.setText(telefone);
+                  cep_texto.setText(cep);
+                  endereco_texto.setText(endereco);
+                  complemento_texto.setText(complemento);
+                  email_texto.setText(email);
+                  //ativo_texto.setText(ativo);
+                  
+              }
+            }
+            
+         }catch(Exception e1){
+            System.out.println("Erro ao Acessar o Banco");
+         }  
+
+      }
+   }
+}

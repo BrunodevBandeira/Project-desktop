@@ -1,0 +1,65 @@
+package br.com.codigos;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class Problema{
+   private String problema;
+   private String cpfCli;
+   
+   public Problema(){
+      this.problema = problema;
+      this.cpfCli = cpfCli;
+   }
+   
+   public Problema(String problema){
+      this.problema = problema;
+   }
+   
+   public String getProblema(){
+      return problema;
+   }
+   public void setProblema(String problema){
+      this.problema = problema;
+   }
+   
+   public String getCpfcli(){
+      return cpfCli;
+   }
+   public void setCpfCli(String cpfCli){
+      this.cpfCli = cpfCli;
+   }
+   
+      public void inserir(Connection conn){
+      String sqlInsert = "INSERT INTO problema(problema, fk_cliente_cpf) VALUES(?,?)";
+      try(PreparedStatement stm = conn.prepareStatement(sqlInsert)){
+         Cliente c = new Cliente();
+         stm.setString(2, getCpfcli());
+         stm.setString(1, getProblema());
+         stm.execute();
+      }catch(Exception e){
+         e.printStackTrace();
+         try{
+            conn.rollback();
+         }catch(Exception e1){
+            System.out.print(e1.getStackTrace());
+         }
+      }
+   }
+   
+   public void carregar (Connection conn){
+      String sqlSelect = "Select problema from problema where fk_cliente_cpf = ?";
+      try(PreparedStatement stm = conn.prepareStatement(sqlSelect)){
+         stm.setString(1, getCpfcli());
+         try(ResultSet rs = stm.executeQuery();){
+            while(rs.next()) {
+					this.setProblema(rs.getString(1));
+            }
+         }
+      }catch(Exception e){
+         e.printStackTrace();
+      }
+   }
+   
+}

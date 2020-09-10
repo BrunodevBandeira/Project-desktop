@@ -1,0 +1,112 @@
+package br.com.codigos;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+
+import br.com.conexaoBD.ConexaoBD;
+import br.com.interfacesprojeto.InterfaceMenu;
+
+public class AddProblema implements ActionListener {
+
+	private JFrame frame;
+	private JButton voltar, adicionar, continuar;
+	private JTextArea cpf_texto, problema_texto;
+	private JLabel problema;
+	private JScrollPane scroll;
+
+	public AddProblema() {
+		frame = new JFrame("Novo Problema");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(700, 600);
+		frame.setResizable(false);
+		frame.getContentPane().setBackground(new Color(200, 200, 200));
+		frame.setLayout(null);
+		frame.setLocationRelativeTo(null);
+
+		voltar = new JButton("Voltar");
+		voltar.setBounds(10, 10, 80, 30);
+		voltar.addActionListener(this);
+
+		cpf_texto = new JTextArea();
+
+		cpf_texto.setBounds(30, 50, 200, 30);
+		cpf_texto.setBorder(BorderFactory.createBevelBorder(1));
+
+		problema = new JLabel("Digite o Novo Problema");
+		problema.setFont(new Font("CALIBRI", Font.BOLD, 20));
+		problema.setBounds(30, 90, 300, 50);
+		frame.add(problema);
+
+		problema_texto = new JTextArea();
+		problema_texto.setLineWrap(true);
+		problema_texto.setWrapStyleWord(true);
+		problema_texto.setBorder(BorderFactory.createBevelBorder(1));
+		problema_texto.setFont(new Font("Calibri", Font.BOLD, 15));
+
+		scroll = new JScrollPane(problema_texto);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setBounds(30, 150, 600, 350);
+
+		adicionar = new JButton("Adicionar");
+		adicionar.setBounds(540, 500, 90, 30);
+		adicionar.addActionListener(this);
+
+		continuar = new JButton("Continuar");
+		continuar.setBounds(580, 10, 90, 30);
+		continuar.addActionListener(this);
+
+		frame.add(voltar);
+		frame.add(cpf_texto);
+		frame.add(scroll);
+		frame.add(adicionar);
+		frame.add(continuar);
+		frame.setVisible(true);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == voltar) {
+			frame.setVisible(false);
+			frame.dispose();
+			InterfaceMenu menu = new InterfaceMenu();
+		} else if (e.getSource() == continuar) {
+			frame.setVisible(false);
+			frame.dispose();
+			InterfaceMenu menu = new InterfaceMenu();
+		} else {
+			String sql = "INSERT INTO problema(problema, fk_cliente_cpf) VALUES(problema_texto, cpf_texto)";
+			try {
+				ConexaoBD b = new ConexaoBD();
+				Connection conn = b.obtemConexao();
+				PreparedStatement stm = conn.prepareStatement(sql);
+				Cliente c = new Cliente();
+				String cpf = cpf_texto.getText();
+				c.setCpf(cpf);
+
+				Problema p = new Problema();
+				String problema = problema_texto.getText();
+
+				p.setCpfCli(cpf);
+				p.setProblema(problema);
+				p.inserir(conn);
+			} catch (Exception e1) {
+				System.out.println("Erro ao inserir dados");
+			}
+			frame.setVisible(false);
+			frame.dispose();
+			InterfaceMenu menu = new InterfaceMenu();
+
+		}
+	}
+}

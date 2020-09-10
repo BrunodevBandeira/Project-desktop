@@ -1,0 +1,147 @@
+package br.com.codigos;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+
+import br.com.conexaoBD.ConexaoBD;
+import br.com.interfacesprojeto.InterfaceMenu;
+
+
+
+public class Trabalho0 implements ActionListener{
+
+   private JFrame frame;
+   private JPanel trabalho, areaNome, areaCpf, areaTelefone;
+   private JButton botao, botao2, voltar;
+   private JTable tabela;
+   private JTextArea labelText, labelText2, labelText3;
+   private JScrollPane scroll, scroll2;
+   
+   public Trabalho0(){
+   
+      frame = new JFrame("Trabalho");
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setSize(800,700);
+      frame.setResizable(false);
+      frame.getContentPane().setBackground(new Color(200,200,200));
+      frame.setLayout(null);
+      frame.setLocationRelativeTo(null);
+      
+      areaNome = new JPanel();
+      areaNome.add(new JLabel("Nome"));
+      areaNome.setBackground(new Color(150,150,150));
+      areaNome.setBounds(40,50,350,50);
+      areaNome.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+      
+      areaCpf = new JPanel();
+      areaCpf.add(new JLabel("CPF"));
+      areaCpf.setBackground(new Color(150,150,150));
+      areaCpf.setBounds(390,50,350,50);
+      areaCpf.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+      labelText = new JTextArea();
+      labelText.setBounds(40,100,350,500);
+      labelText.setBackground(new Color(150,150,150));
+      labelText.setEditable(false);
+      labelText.setLineWrap(true);
+      labelText.setWrapStyleWord(true);
+      labelText.setBorder(BorderFactory.createBevelBorder(1));
+      labelText.setFont(new Font("Calibri", Font.BOLD, 15));
+      
+      labelText2 = new JTextArea();
+      labelText2.setBounds(390,100,350,500);
+      labelText2.setBackground(new Color(150,150,150));
+      labelText2.setEditable(false);
+      labelText2.setLineWrap(true);
+      labelText2.setWrapStyleWord(true);
+      labelText2.setBorder(BorderFactory.createBevelBorder(1));
+      labelText2.setFont(new Font("Calibri", Font.BOLD, 15));
+      
+      botao = new JButton("Continuar");
+      botao.setBounds(660,615,90,30);
+      botao.addActionListener(this); 
+      
+      botao2 = new JButton("Listar");
+      botao2.setBounds(650,20,90,30);
+      botao2.addActionListener(this);
+      
+      voltar = new JButton("Voltar");
+      voltar.setBounds(40,20,90,30);
+      voltar.addActionListener(this);
+           
+      frame.add(areaNome);
+      frame.add(areaCpf);
+      frame.add(labelText);
+      frame.add(labelText2);
+      frame.add(botao);
+      frame.add(botao2);
+      frame.add(voltar);
+      frame.setVisible(true);
+   }
+   
+   public void actionPerformed(ActionEvent e){
+      if(e.getSource() == botao){
+         frame.setVisible(false);
+         frame.dispose();
+         Trabalho trab = new Trabalho();
+      }
+      else if(e.getSource() == botao2){
+         try{
+            ConexaoBD b = new ConexaoBD();
+            Connection conn = b.obtemConexao();
+            Cliente c = new Cliente();
+            String sql = "SELECT nome, cpf, ativo FROM Cliente WHERE ativo = 's'";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            String aux = ""; 
+            String aux2 = "";
+            while(rs.next()) {
+					String nome = rs.getString("nome");
+               String cpf = rs.getString("cpf");
+               aux += String.format("%s\n", nome);
+               aux2 += String.format("%s\n", cpf);
+               c.listar(conn);
+               labelText.setText(aux);
+               labelText2.setText(aux2);
+
+
+            }
+            
+            
+         }catch(Exception e1){
+            System.out.println("Erro ao Acessar o Banco");
+         }
+         
+         scroll = new JScrollPane(labelText);
+         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+         scroll.setBounds(40,100,350,500);
+      
+         scroll2 = new JScrollPane(labelText2);
+         scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+         scroll2.setBounds(390,100,350,500);
+         
+         frame.add(scroll);
+         frame.add(scroll2);
+      }
+      else{
+         frame.setVisible(false);
+         frame.dispose();
+         InterfaceMenu menu = new InterfaceMenu();
+      }
+   }
+
+}

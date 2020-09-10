@@ -1,0 +1,9 @@
+package br.com.codigos;
+
+import br.com.interfacesprojeto.InterfaceLogim;
+
+public class CodigoMenu{
+   public static void main (String [] agrs){
+      InterfaceLogim login = new InterfaceLogim();
+      }
+}
